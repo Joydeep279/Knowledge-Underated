@@ -1,3 +1,4 @@
+ṭ
 # CommonJS Modules: A Deep Dive into Node.js Module Architecture
 
 ## Part 1: Foundational Concepts (Basic to Intermediate)
@@ -111,7 +112,7 @@ module.exports = { name };
   // Your code is injected here
   const name = 'Alice';
   module.exports = { name };
-  
+
   // Node.js returns module.exports at the end
 });
 ```
@@ -294,16 +295,16 @@ Module._resolveFilename = function(request, parent, isMain) {
 
   // 2. Get all possible paths
   const paths = Module._resolveLookupPaths(request, parent);
-  
+
   // 3. Try to find the file
   const filename = Module._findPath(request, paths, isMain);
-  
+
   if (!filename) {
     const err = new Error(`Cannot find module '${request}'`);
     err.code = 'MODULE_NOT_FOUND';
     throw err;
   }
-  
+
   return filename;
 };
 ```
@@ -317,12 +318,12 @@ Module._extensions = {
     const content = fs.readFileSync(filename, 'utf8');
     module._compile(content, filename);
   },
-  
+
   '.json': function(module, filename) {
     const content = fs.readFileSync(filename, 'utf8');
     module.exports = JSON.parse(content);
   },
-  
+
   '.node': function(module, filename) {
     // Native addon: C++ binary module
     return process.dlopen(module, path.toNamespacedPath(filename));
@@ -393,7 +394,7 @@ class Database {
     this.connection = null;
     console.log('Database instance created');
   }
-  
+
   connect() {
     this.connection = { /* ... */ };
   }
@@ -437,25 +438,25 @@ Module._cache = Object.create(null); // The cache object
 
 Module._load = function(request, parent, isMain) {
   const filename = Module._resolveFilename(request, parent, isMain);
-  
+
   // Check cache first
   const cachedModule = Module._cache[filename];
   if (cachedModule !== undefined) {
     updateChildren(parent, cachedModule, true);
     return cachedModule.exports; // Return cached exports
   }
-  
+
   // Check if it's a core module
   if (NativeModule.canBeRequiredByUsers(filename)) {
     return NativeModule.require(filename);
   }
-  
+
   // Create new Module instance
   const module = new Module(filename, parent);
-  
+
   // Cache BEFORE loading (important for circular dependencies)
   Module._cache[filename] = module;
-  
+
   // Load the module
   let threw = true;
   try {
@@ -466,7 +467,7 @@ Module._load = function(request, parent, isMain) {
       delete Module._cache[filename]; // Remove from cache if loading failed
     }
   }
-  
+
   return module.exports;
 };
 ```
@@ -539,12 +540,12 @@ in main, a.done = true , b.done = true
 Module.prototype.load = function(filename) {
   this.filename = filename;
   this.paths = Module._nodeModulePaths(path.dirname(filename));
-  
+
   const extension = path.extname(filename) || '.js';
-  
+
   // Module._extensions[extension] will execute the file
   Module._extensions[extension](this, filename);
-  
+
   this.loaded = true; // Set to true AFTER execution
 };
 
@@ -650,18 +651,18 @@ const vm = require('vm');
 Module.prototype._compile = function(content, filename) {
   // Wrap the code
   const wrapper = Module.wrap(content);
-  
+
   // Compile the wrapped code into a function
   const compiledWrapper = vm.runInThisContext(wrapper, {
     filename: filename,
     lineOffset: 0,
     displayErrors: true
   });
-  
+
   // Prepare parameters
   const dirname = path.dirname(filename);
   const require = makeRequireFunction(this); // Create bound require function
-  
+
   const args = [
     this.exports,
     require,
@@ -669,10 +670,10 @@ Module.prototype._compile = function(content, filename) {
     filename,
     dirname
   ];
-  
+
   // Execute the compiled function
   const result = compiledWrapper.apply(this.exports, args);
-  
+
   return result;
 };
 ```
@@ -1056,32 +1057,32 @@ Into this (simplified):
 (function(modules) {
   // Module cache
   const installedModules = {};
-  
+
   // require() implementation
   function __webpack_require__(moduleId) {
     // Check cache
     if (installedModules[moduleId]) {
       return installedModules[moduleId].exports;
     }
-    
+
     // Create module
     const module = installedModules[moduleId] = {
       id: moduleId,
       loaded: false,
       exports: {}
     };
-    
+
     // Execute module function
     modules[moduleId].call(
       module.exports,
       module,
       module.exports,
       __webpack_require__);
-    
+
     module.loaded = true;
     return module.exports;
   }
-  
+
   // Start with entry module
   return __webpack_require__(0);
 })({

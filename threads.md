@@ -2014,7 +2014,7 @@ On modern multi-socket servers, memory access is non-uniform:
 Server with 2 CPU sockets:
 
 ┌─────────────────────┐         ┌─────────────────────┐
-│   CPU Socket 0      │         │   CPU Socket 1      │
+│     CPU Socket 0    │         │     CPU Socket 1    │
 │   ┌───┬───┬───┬───┐ │         │   ┌───┬───┬───┬───┐ │
 │   │C0 │C1 │C2 │C3 │ │         │   │C4 │C5 │C6 │C7 │ │
 │   └───┴───┴───┴───┘ │         │   └───┴───┴───┴───┘ │
